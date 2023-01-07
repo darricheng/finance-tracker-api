@@ -3,15 +3,15 @@ use super::model::{Transaction, TransactionQuery};
 use axum::{
     extract::{self, Query, State},
     http::StatusCode,
-    response::IntoResponse,
+    response,
 };
 use mongodb::bson::Document;
-use mongodb::{bson::doc, Client};
+use mongodb::Client;
 
 pub async fn add_transaction(
     extract::State(state): State<Client>,
     extract::Json(json_payload): extract::Json<Transaction>,
-) -> impl IntoResponse {
+) -> impl response::IntoResponse {
     let collection = state.database(DB_NAME).collection(COLLECTION_NAME);
     let result = collection.insert_one(json_payload, None).await;
     match result {
@@ -20,7 +20,7 @@ pub async fn add_transaction(
     }
 }
 
-pub async fn get_transactions(extract::State(state): State<Client>) -> impl IntoResponse {
+pub async fn get_transactions(extract::State(state): State<Client>) -> impl response::IntoResponse {
     let collection = state
         .database(DB_NAME)
         .collection::<Document>(COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
@@ -33,7 +33,7 @@ pub async fn get_transactions(extract::State(state): State<Client>) -> impl Into
 pub async fn get_transactions_by_date(
     extract::State(state): State<Client>,
     params: Query<TransactionQuery>,
-) -> impl IntoResponse {
+) -> impl response::IntoResponse {
     println!("{:?}", params.0);
     let filter = Some(params.0);
 
