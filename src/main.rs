@@ -1,3 +1,4 @@
+mod db_config;
 mod transactions;
 
 use axum::Router;
