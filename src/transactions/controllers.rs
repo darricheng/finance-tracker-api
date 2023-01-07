@@ -36,4 +36,6 @@ pub async fn get_transactions_by_date(
 ) -> impl IntoResponse {
     println!("{:?}", params.0);
     let filter = Some(params.0);
+
+    // TODO: Implement function!
 }
