@@ -6,3 +6,8 @@ pub struct Transaction {
     pub value: i32,
     pub details: String,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TransactionQuery {
+    pub date: String,
+}
