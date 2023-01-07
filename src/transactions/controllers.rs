@@ -1,15 +1,12 @@
-use std::collections::HashMap;
-
-use super::model::Transaction;
+use super::super::db_config::{COLLECTION_NAME, DB_NAME};
+use super::model::{Transaction, TransactionQuery};
 use axum::{
     extract::{self, Query, State},
     http::StatusCode,
     response::IntoResponse,
 };
+use mongodb::bson::Document;
 use mongodb::{bson::doc, Client};
-
-const DB_NAME: &str = "masterFinanceTracker";
-const COLLECTION_NAME: &str = "myTransactions";
 
 pub async fn add_transaction(
     extract::State(state): State<Client>,
@@ -23,25 +20,20 @@ pub async fn add_transaction(
     }
 }
 
-pub async fn get_transaction(
+pub async fn get_transactions(extract::State(state): State<Client>) -> impl IntoResponse {
+    let collection = state
+        .database(DB_NAME)
+        .collection::<Document>(COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
+
+    let result = collection.find(None, None).await;
+
+    // TODO: Return a json if found
+}
+
+pub async fn get_transactions_by_date(
     extract::State(state): State<Client>,
-    params: Option<Query<HashMap<String, String>>>,
+    params: Query<TransactionQuery>,
 ) -> impl IntoResponse {
-    // let collection = state.database(DB_NAME).collection(COLLECTION_NAME);
-
-    println!("hi");
-
-    let result = match params {
-        Some(params) => {
-            let params = params.0;
-            println!("{:?}", params);
-
-            // collection.find(params, None).await
-        }
-        None => {
-            println!("None");
-            // collection.find(None, None).await
-        }
-    };
-    "getter"
+    println!("{:?}", params.0);
+    let filter = Some(params.0);
 }

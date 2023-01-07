@@ -12,7 +12,7 @@ pub async fn transaction_routes() -> Router {
 
     Router::new()
         .route("/", get(|| async { "Hello base path!" }))
-        .route("/getter", get(controllers::get_transaction))
-        .route("/poster", post(controllers::add_transaction))
+        .route("/get-all", get(controllers::get_transactions))
+        .route("/add", post(controllers::add_transaction))
         .with_state(mongodb_client)
 }
