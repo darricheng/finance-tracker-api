@@ -19,6 +19,11 @@ pub async fn add_transaction(
     extract::Json(json_payload): extract::Json<Transaction>,
 ) -> impl IntoResponse {
     let collection = state.database(DB_NAME).collection(COLLECTION_NAME);
+
+    println!("json_payload: {:?}", json_payload);
+
+    // TODO: Add the date field to the json_payload
+
     let result = collection.insert_one(json_payload, None).await;
     match result {
         Ok(_) => StatusCode::CREATED,
