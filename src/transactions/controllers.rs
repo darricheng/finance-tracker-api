@@ -56,7 +56,7 @@ pub async fn add_transaction(
 
 pub async fn get_transactions(
     extract::State(state): State<Client>,
-) -> axum::response::Result<Json<Vec<Transaction>>, StatusCode> {
+) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     let collection = state
         .database(DB_NAME)
         .collection::<Document>(COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
@@ -80,6 +80,13 @@ pub async fn get_transactions(
             }
         }
     }
+
+    // Convert the result vector to a vector of ReturnTransaction structs
+    let result_vec: Vec<ReturnTransaction> = result_vec
+        .iter()
+        // .map(|transaction| ReturnTransaction::into(transaction))
+        .map(ReturnTransaction::from_transaction)
+        .collect();
 
     // Return a json of the result vector
     Ok(axum::Json(result_vec))
