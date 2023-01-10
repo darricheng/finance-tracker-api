@@ -1,13 +1,14 @@
 use super::super::db_config::{COLLECTION_NAME, DB_NAME};
-use super::model::{NewTransactionRequest, Transaction, TransactionQuery};
+use super::model::{NewTransactionRequest, ReturnTransaction, Transaction, TransactionDateQuery};
 use axum::Json;
 use axum::{
     self,
-    extract::{self, Query, State},
+    extract::{self, State},
     http::StatusCode,
     response::IntoResponse,
 };
 use futures::stream::TryStreamExt;
+use mongodb::bson::doc;
 use mongodb::{
     self,
     bson::{self, Document},
@@ -84,14 +85,57 @@ pub async fn get_transactions(
     Ok(axum::Json(result_vec))
 }
 
-pub async fn get_transactions_by_date(
+pub async fn get_transactions_by_date_range(
     extract::State(state): State<Client>,
-    params: Query<TransactionQuery>,
-) -> impl IntoResponse {
-    println!("{:?}", params.0);
-    let filter = Some(params.0);
+    extract::Json(json_payload): extract::Json<TransactionDateQuery>,
+) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
+    println!("json_payload: {:?}", json_payload);
 
-    // TODO: Implement function!
-    // The function needs to search by time to the hour as the dates are stored in UTC time
+    // The function searches by time to the hour as the dates are stored in UTC time
     // but the user would be searching by their local time
+    let bson_start_date = bson::DateTime::from_chrono(json_payload.start_date);
+    let bson_end_date = bson::DateTime::from_chrono(json_payload.end_date);
+
+    let collection = state
+        .database(DB_NAME)
+        .collection::<Document>(COLLECTION_NAME);
+
+    let filter = doc! {
+        "date": {
+            "$gte": bson_start_date,
+            "$lte": bson_end_date
+        }
+    };
+
+    let mut cursor = match collection.find(filter, None).await {
+        Ok(cursor) => cursor,
+        Err(err) => {
+            println!("Error: {}", err);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let mut result_vec: Vec<Transaction> = Vec::new();
+
+    // Iterate over the results of the cursor.
+    while let Ok(Some(transaction)) = cursor.try_next().await {
+        match bson::from_bson::<Transaction>(bson::Bson::Document(transaction)) {
+            Ok(val) => result_vec.push(val),
+            Err(err) => {
+                println!("Error: {}", err);
+            }
+        }
+    }
+
+    println!("result_vec before: {:?}", result_vec);
+    let result_vec: Vec<ReturnTransaction> = result_vec
+        .iter()
+        // .map(|transaction| ReturnTransaction::into(transaction))
+        .map(ReturnTransaction::from_transaction)
+        .collect();
+
+    println!("result_vec: {:?}", result_vec);
+
+    // Return a json of the result vector
+    Ok(axum::Json(result_vec))
 }

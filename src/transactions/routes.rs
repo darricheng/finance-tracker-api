@@ -13,5 +13,9 @@ pub async fn transaction_routes() -> Router {
         .route("/", get(|| async { "Hello base path!" }))
         .route("/get_all", get(controllers::get_transactions))
         .route("/add", post(controllers::add_transaction))
+        .route(
+            "/get_by_date_range",
+            get(controllers::get_transactions_by_date_range),
+        )
         .with_state(mongodb_client)
 }

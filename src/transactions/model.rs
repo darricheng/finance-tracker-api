@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Base Transaction model
 /// Represents the data structure of a transaction document in the database.
 /// All fields are required. The derived structs are used for checking the validity of the data from users.
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Transaction {
     pub date: bson::DateTime,
     pub category: String,
@@ -37,11 +37,53 @@ pub struct NewTransactionRequest {
     pub details: String,
 }
 
-/// TransactionQuery model
+/// TransactionDateQuery model
 /// Represents the data structure of data required to query the database for transactions.
 // TODO: Add support for querying by date range
 // TODO: Add support for querying by category
 #[derive(Debug, Deserialize, Serialize)]
-pub struct TransactionQuery {
-    pub date: String,
+pub struct TransactionDateQuery {
+    pub start_date: chrono::DateTime<chrono::Utc>,
+    pub end_date: chrono::DateTime<chrono::Utc>,
+}
+
+/// ReturnTransaction model
+/// Represents the data structure of data returned to the user.
+/// Returns the date as a chrono DateTime object instead of a bson DateTime object.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ReturnTransaction {
+    pub date: chrono::DateTime<chrono::Utc>,
+    pub category: String,
+    pub value: f32,
+    pub details: String,
+}
+
+impl From<Transaction> for ReturnTransaction {
+    fn from(transaction: Transaction) -> Self {
+        let date = transaction.date.to_chrono();
+        let category = transaction.category;
+        let value = transaction.value;
+        let details = transaction.details;
+        ReturnTransaction {
+            date,
+            category,
+            value,
+            details,
+        }
+    }
+}
+impl ReturnTransaction {
+    /// Converts a reference to a Transaction struct to a ReturnTransaction struct
+    pub fn from_transaction(transaction: &Transaction) -> Self {
+        let date = transaction.date.to_chrono();
+        let category = transaction.category.clone();
+        let value = transaction.value;
+        let details = transaction.details.clone();
+        ReturnTransaction {
+            date,
+            category,
+            value,
+            details,
+        }
+    }
 }
