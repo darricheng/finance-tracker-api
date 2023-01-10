@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 // TODO: "Make category an enum: https://serde.rs/enum-representations.html"
 // The enum variants should be set by the user
 
-/// Transaction model
+/// Base Transaction model
 /// Represents the data structure of a transaction document in the database.
 /// All fields are required. The derived structs are used for checking the validity of the data from users.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
