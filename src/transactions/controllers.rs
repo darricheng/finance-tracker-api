@@ -142,3 +142,11 @@ pub async fn get_transactions_by_date_range(
     // Return a json of the result vector
     Ok(axum::Json(result_vec))
 }
+
+pub async fn update_transaction() -> impl IntoResponse {
+    StatusCode::NOT_IMPLEMENTED
+}
+
+pub async fn delete_transaction() -> impl IntoResponse {
+    StatusCode::NOT_IMPLEMENTED
+}

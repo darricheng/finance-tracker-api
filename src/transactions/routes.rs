@@ -17,5 +17,7 @@ pub async fn transaction_routes() -> Router {
             "/get_by_date_range",
             get(controllers::get_transactions_by_date_range),
         )
+        .route("/update", post(controllers::update_transaction))
+        .route("/delete", post(controllers::delete_transaction))
         .with_state(mongodb_client)
 }
