@@ -89,8 +89,6 @@ pub async fn get_transactions_by_date_range(
     extract::State(state): State<Client>,
     extract::Json(json_payload): extract::Json<TransactionDateQuery>,
 ) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
-    println!("json_payload: {:?}", json_payload);
-
     // The function searches by time to the hour as the dates are stored in UTC time
     // but the user would be searching by their local time
     let bson_start_date = bson::DateTime::from_chrono(json_payload.start_date);
@@ -127,14 +125,12 @@ pub async fn get_transactions_by_date_range(
         }
     }
 
-    println!("result_vec before: {:?}", result_vec);
+    // Convert the result vector to a vector of ReturnTransaction structs
     let result_vec: Vec<ReturnTransaction> = result_vec
         .iter()
         // .map(|transaction| ReturnTransaction::into(transaction))
         .map(ReturnTransaction::from_transaction)
         .collect();
-
-    println!("result_vec: {:?}", result_vec);
 
     // Return a json of the result vector
     Ok(axum::Json(result_vec))
