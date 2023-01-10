@@ -1,5 +1,5 @@
 use super::super::db_config::{COLLECTION_NAME, DB_NAME};
-use super::model::{Transaction, TransactionQuery};
+use super::model::{NewTransactionRequest, Transaction, TransactionQuery};
 use axum::Json;
 use axum::{
     self,
@@ -16,15 +16,37 @@ use mongodb::{
 
 pub async fn add_transaction(
     extract::State(state): State<Client>,
-    extract::Json(json_payload): extract::Json<Transaction>,
+    extract::Json(json_payload): extract::Json<NewTransactionRequest>,
 ) -> impl IntoResponse {
+    // Add the date field to the json_payload
+    // Generate a new DateTime object with the current time
+    // We use UTC time for ease of use
+    // When we convert the DateTime object to a bson DateTime object, it will be converted to UTC time anyway
+    let date = chrono::Utc::now();
+    println!("date: {:?}", date);
+    // Convert the DateTime object to a bson DateTime object
+    let date = bson::DateTime::from_chrono(date);
+    // Create an instance of a new struct that includes the json data and the date
+    let transaction = Transaction::new(
+        date,
+        json_payload.category,
+        json_payload.value,
+        json_payload.details,
+    );
+    println!("transaction: {:?}", transaction);
+
+    // Serialize the new struct to a bson document
+    let bson_document = match bson::to_document(&transaction) {
+        Ok(document) => document,
+        Err(err) => {
+            println!("Error converting transaction to bson document: {:?}", err);
+            return StatusCode::INTERNAL_SERVER_ERROR;
+        }
+    };
+
+    // Insert the bson document into the database
     let collection = state.database(DB_NAME).collection(COLLECTION_NAME);
-
-    println!("json_payload: {:?}", json_payload);
-
-    // TODO: Add the date field to the json_payload
-
-    let result = collection.insert_one(json_payload, None).await;
+    let result = collection.insert_one(bson_document, None).await;
     match result {
         Ok(_) => StatusCode::CREATED,
         Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
@@ -70,4 +92,6 @@ pub async fn get_transactions_by_date(
     let filter = Some(params.0);
 
     // TODO: Implement function!
+    // The function needs to search by time to the hour as the dates are stored in UTC time
+    // but the user would be searching by their local time
 }
