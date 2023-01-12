@@ -10,7 +10,6 @@ pub async fn transaction_routes() -> Router {
     let mongodb_client = Client::with_uri_str(MONGO_URI).await.unwrap();
 
     Router::new()
-        .route("/", get(|| async { "Hello base path!" }))
         .route("/get_all", get(controllers::get_transactions))
         .route("/add", post(controllers::add_transaction))
         .route(
