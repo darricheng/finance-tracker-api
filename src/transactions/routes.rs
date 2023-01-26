@@ -1,7 +1,7 @@
 use super::super::db_config::MONGO_URI;
 use super::controllers;
 use axum::{
-    routing::{get, post},
+    routing::{delete, get, post, put},
     Router,
 };
 use mongodb::Client;
