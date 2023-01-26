@@ -8,10 +8,9 @@ use axum::{
     Json,
 };
 use futures::stream::TryStreamExt; // For cursor.try_next method
-use mongodb::bson::doc;
 use mongodb::{
     self,
-    bson::{self, Document},
+    bson::{self, doc, Document},
     Client,
 };
 
