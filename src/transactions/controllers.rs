@@ -1,11 +1,11 @@
 use super::super::db_config::{COLLECTION_NAME, DB_NAME};
 use super::model::{NewTransactionRequest, ReturnTransaction, Transaction, TransactionDateQuery};
-use axum::Json;
 use axum::{
     self,
     extract::{self, State},
     http::StatusCode,
     response::IntoResponse,
+    Json,
 };
 use futures::stream::TryStreamExt; // For cursor.try_next method
 use mongodb::bson::doc;
