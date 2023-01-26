@@ -2,4 +2,4 @@
 
 pub const MONGO_URI: &str = "mongodb://localhost:27017/";
 pub const DB_NAME: &str = "financeTrackerApp";
-pub const COLLECTION_NAME: &str = "testTransactions"; // ! Should each user have an individual collection?
+pub const COLLECTION_NAME: &str = "testTransactions";
