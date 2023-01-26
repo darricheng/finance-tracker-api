@@ -1,13 +1,12 @@
-use super::super::db_config::MONGO_URI;
 use super::controllers;
+use crate::db_config::get_mongodb_client;
 use axum::{
     routing::{delete, get, post, put},
     Router,
 };
-use mongodb::Client;
 
 pub async fn transaction_routes() -> Router {
-    let mongodb_client = Client::with_uri_str(MONGO_URI).await.unwrap();
+    let mongodb_client = get_mongodb_client().await;
 
     Router::new()
         .route("/get_all", get(controllers::get_transactions))
