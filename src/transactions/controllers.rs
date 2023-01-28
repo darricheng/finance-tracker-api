@@ -32,6 +32,7 @@ pub async fn add_transaction(
         json_payload.category,
         json_payload.value,
         json_payload.details,
+        json_payload.user_id,
     );
     println!("transaction: {:?}", transaction);
 
