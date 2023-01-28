@@ -1,4 +1,4 @@
-use super::super::db_config::{COLLECTION_NAME, DB_NAME};
+use super::super::db_config::{DB_NAME, TRANSACTIONS_COLLECTION_NAME};
 use super::model::{NewTransactionRequest, ReturnTransaction, Transaction, TransactionDateQuery};
 use axum::{
     self,
@@ -46,7 +46,9 @@ pub async fn add_transaction(
     };
 
     // Insert the bson document into the database
-    let collection = state.database(DB_NAME).collection(COLLECTION_NAME);
+    let collection = state
+        .database(DB_NAME)
+        .collection(TRANSACTIONS_COLLECTION_NAME);
     let result = collection.insert_one(bson_document, None).await;
     match result {
         Ok(_) => StatusCode::CREATED,
@@ -59,7 +61,7 @@ pub async fn get_transactions(
 ) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     let collection = state
         .database(DB_NAME)
-        .collection::<Document>(COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
+        .collection::<Document>(TRANSACTIONS_COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
 
     let mut cursor = match collection.find(None, None).await {
         Ok(cursor) => cursor,
@@ -103,7 +105,7 @@ pub async fn get_transactions_by_date_range(
 
     let collection = state
         .database(DB_NAME)
-        .collection::<Document>(COLLECTION_NAME);
+        .collection::<Document>(TRANSACTIONS_COLLECTION_NAME);
 
     let filter = doc! {
         "date": {

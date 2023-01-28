@@ -1,4 +1,5 @@
-use super::super::db_config::{COLLECTION_NAME, DB_NAME};
+use super::super::db_config::{DB_NAME, USERS_COLLECTION_NAME};
+use super::model::User;
 use axum::{
     self,
     extract::{self, State},
@@ -12,7 +13,10 @@ use mongodb::{
     Client,
 };
 
-pub async fn add_user() -> impl IntoResponse {
+pub async fn add_user(
+    extract::State(state): State<Client>,
+    extract::Json(json_payload): extract::Json<User>,
+) -> impl IntoResponse {
     StatusCode::NOT_IMPLEMENTED
 }
 
