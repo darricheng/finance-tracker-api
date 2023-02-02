@@ -17,7 +17,22 @@ pub async fn add_user(
     extract::State(state): State<Client>,
     extract::Json(json_payload): extract::Json<User>,
 ) -> impl IntoResponse {
-    StatusCode::NOT_IMPLEMENTED
+    // Serialize the struct to a bson document
+    let bson_document = match bson::to_document(&json_payload) {
+        Ok(document) => document,
+        Err(err) => {
+            println!("Error converting user to bson document: {:?}", err);
+            return StatusCode::INTERNAL_SERVER_ERROR;
+        }
+    };
+
+    // Insert the bson document into the database
+    let collection = state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
+    let result = collection.insert_one(bson_document, None).await;
+    match result {
+        Ok(_) => StatusCode::CREATED,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
 }
 
 pub async fn get_user() -> impl IntoResponse {
