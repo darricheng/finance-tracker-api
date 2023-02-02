@@ -1,4 +1,4 @@
-use mongodb::bson;
+use mongodb::bson::{self, oid::ObjectId};
 use serde::{Deserialize, Serialize};
 
 // TODO: "Make category an enum: https://serde.rs/enum-representations.html"
@@ -13,15 +13,23 @@ pub struct Transaction {
     pub category: String,
     pub value: f32,
     pub details: String,
+    pub user_id: ObjectId,
 }
 
 impl Transaction {
-    pub fn new(date: bson::DateTime, category: String, value: f32, details: String) -> Self {
+    pub fn new(
+        date: bson::DateTime,
+        category: String,
+        value: f32,
+        details: String,
+        user_id: ObjectId,
+    ) -> Self {
         Transaction {
             date,
             category,
             value,
             details,
+            user_id,
         }
     }
 }
@@ -35,6 +43,7 @@ pub struct NewTransactionRequest {
     pub category: String,
     pub value: f32,
     pub details: String,
+    pub user_id: ObjectId,
 }
 
 /// TransactionDateQuery model
