@@ -1,5 +1,6 @@
 mod db_config;
 mod transactions;
+mod users;
 
 use axum::Router;
 
@@ -9,10 +10,12 @@ async fn main() {
     // See: https://www.thorsten-hans.com/working-with-environment-variables-in-rust/
 
     // Build individual api routes
-    let api_routes = Router::new().nest(
-        "/transactions",
-        transactions::routes::transaction_routes().await,
-    );
+    let api_routes = Router::new()
+        .nest(
+            "/transactions",
+            transactions::routes::transaction_routes().await,
+        )
+        .nest("/users", users::routes::user_routes().await);
 
     // Nest all api routes under an parent path "/api"
     let app = Router::new().nest("/api", api_routes);
