@@ -37,7 +37,7 @@ _The repository for the frontend can be found [here](https://github.com/darriche
 ![Data structure](./images/first-data-structure.jpg "Data structure")
 
 **Data flow for adding a transaction**
-![Adding a transaction data flow](./images/adding-a-transaction.jpg "Adding a transaction data flow")
+![Adding a transaction data flow](./images/add-transaction-data-flow.jpg "Adding a transaction data flow")
 
 **Idea for API Key authentication flow**
 ![API Key authentication flow](./images/api-key-sketch.jpg "API Key authentication flow")
