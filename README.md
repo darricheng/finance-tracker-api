@@ -27,3 +27,31 @@ _This is the repository for the backend._
 - SvelteKit
 
 _The repository for the frontend can be found [here](https://github.com/darricheng/finance-tracker-web-frontend)._
+
+## Data-related Sketches
+
+**Initial idea for data flow between devices and the backend**
+![Initial information flow](./images/initial-information-flow.jpg "Initial information flow")
+
+**Data structure**
+![Data structure](./images/first-data-structure.jpg "Data structure")
+
+**Data flow for adding a transaction**
+![Adding a transaction data flow](./images/adding-a-transaction.jpg "Adding a transaction data flow")
+
+**Idea for API Key authentication flow**
+![API Key authentication flow](./images/api-key-sketch.jpg "API Key authentication flow")
+
+## Website Structure & Wireframe Sketches
+
+**Initial website structure**
+![Initial website structure](./images/initial-website-structure.jpg "Initial website structure")
+
+**Desktop wireframes**
+![Desktop wireframes](./images/desktop-wireframes.jpg "Desktop wireframes")
+
+**App Dashboard wireframe**
+![App Dashboard wireframe](./images/app-dashboard-wireframe.jpg "App Dashboard wireframe")
+
+**Transactions wireframe**
+![Transactions wireframe](./images/transactions-page-wireframe.jpg "Transactions wireframe")
