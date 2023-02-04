@@ -1,5 +1,5 @@
 use super::super::db_config::{DB_NAME, USERS_COLLECTION_NAME};
-use super::model::User;
+use super::model::{NewUserRequest, User};
 use axum::{
     self,
     extract::{self, State},
@@ -15,10 +15,16 @@ use mongodb::{
 
 pub async fn add_user(
     extract::State(state): State<Client>,
-    extract::Json(json_payload): extract::Json<User>,
+    extract::Json(json_payload): extract::Json<NewUserRequest>,
 ) -> impl IntoResponse {
+    let new_user = User::new(
+        json_payload.email,
+        json_payload.firebase_id,
+        Vec::new(),
+        String::new(),
+    );
     // Serialize the struct to a bson document
-    let bson_document = match bson::to_document(&json_payload) {
+    let bson_document = match bson::to_document(&new_user) {
         Ok(document) => document,
         Err(err) => {
             println!("Error converting user to bson document: {:?}", err);
