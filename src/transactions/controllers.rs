@@ -23,7 +23,7 @@ pub async fn add_transaction(
     // We use UTC time for ease of use
     // When we convert the DateTime object to a bson DateTime object, it will be converted to UTC time anyway
     let date = chrono::Utc::now();
-    println!("date: {:?}", date);
+    println!("date: {date:?}");
     // Convert the DateTime object to a bson DateTime object
     let date = bson::DateTime::from_chrono(date);
     // Create an instance of a new struct that includes the json data and the date
@@ -34,13 +34,13 @@ pub async fn add_transaction(
         json_payload.details,
         json_payload.user_id,
     );
-    println!("transaction: {:?}", transaction);
+    println!("transaction: {transaction:?}");
 
     // Serialize the new struct to a bson document
     let bson_document = match bson::to_document(&transaction) {
         Ok(document) => document,
         Err(err) => {
-            println!("Error converting transaction to bson document: {:?}", err);
+            println!("Error converting transaction to bson document: {err:?}");
             return StatusCode::INTERNAL_SERVER_ERROR;
         }
     };
@@ -66,7 +66,7 @@ pub async fn get_transactions(
     let mut cursor = match collection.find(None, None).await {
         Ok(cursor) => cursor,
         Err(err) => {
-            println!("Error: {}", err);
+            println!("Error: {err}");
             return Err(StatusCode::INTERNAL_SERVER_ERROR);
         }
     };
@@ -78,7 +78,7 @@ pub async fn get_transactions(
         match bson::from_bson(bson::Bson::Document(transaction)) {
             Ok(val) => result_vec.push(val),
             Err(err) => {
-                println!("Error: {}", err);
+                println!("Error: {err}");
             }
         }
     }
@@ -117,7 +117,7 @@ pub async fn get_transactions_by_date_range(
     let mut cursor = match collection.find(filter, None).await {
         Ok(cursor) => cursor,
         Err(err) => {
-            println!("Error: {}", err);
+            println!("Error: {err}");
             return Err(StatusCode::INTERNAL_SERVER_ERROR);
         }
     };
@@ -129,7 +129,7 @@ pub async fn get_transactions_by_date_range(
         match bson::from_bson::<Transaction>(bson::Bson::Document(transaction)) {
             Ok(val) => result_vec.push(val),
             Err(err) => {
-                println!("Error: {}", err);
+                println!("Error: {err}");
             }
         }
     }

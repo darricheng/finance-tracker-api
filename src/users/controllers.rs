@@ -28,7 +28,7 @@ pub async fn add_user(
     let bson_document = match bson::to_document(&new_user) {
         Ok(document) => document,
         Err(err) => {
-            println!("Error converting user to bson document: {:?}", err);
+            println!("Error converting user to bson document: {err:?}");
             return StatusCode::INTERNAL_SERVER_ERROR;
         }
     };
