@@ -45,7 +45,6 @@ pub struct NewTransactionRequest {
 
 /// TransactionDateQuery model
 /// Represents the data structure of data required to query the database for transactions.
-// TODO: Add support for querying by date range
 // TODO: Add support for querying by category
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TransactionDateQuery {
