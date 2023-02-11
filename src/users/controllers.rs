@@ -42,6 +42,7 @@ pub async fn add_user(
     }
 }
 
+/// The query string for the get_user_by_email route
 #[derive(Deserialize)]
 pub struct EmailQuery {
     email: String,
