@@ -12,6 +12,7 @@ use mongodb::{
     bson::{self, doc, Document},
     Client,
 };
+use serde::Deserialize;
 
 pub async fn add_user(
     extract::State(state): State<Client>,
@@ -41,8 +42,42 @@ pub async fn add_user(
     }
 }
 
-pub async fn get_user() -> impl IntoResponse {
-    StatusCode::NOT_IMPLEMENTED
+#[derive(Deserialize)]
+pub struct EmailQuery {
+    email: String,
+}
+
+pub async fn get_user_by_email(
+    extract::State(state): State<Client>,
+    extract::Query(email_query): extract::Query<EmailQuery>,
+) -> axum::response::Result<Json<User>, StatusCode> {
+    let collection = state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
+    let result = collection
+        .find_one(doc! {"email": email_query.email}, None)
+        .await;
+
+    let res_doc = match result {
+        Ok(document) => document,
+        Err(err) => {
+            println!("Error finding user by email: {err:?}");
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    let bson_user = match res_doc {
+        Some(doc) => doc,
+        None => return Err(StatusCode::NOT_FOUND),
+    };
+
+    let user: User = match bson::from_document(bson_user) {
+        Ok(user) => user,
+        Err(err) => {
+            println!("Error converting bson document to user: {err:?}");
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    Ok(Json(user))
 }
 
 pub async fn update_user() -> impl IntoResponse {

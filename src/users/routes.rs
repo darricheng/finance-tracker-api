@@ -10,7 +10,7 @@ pub async fn user_routes() -> Router {
 
     Router::new()
         .route("/add_user", post(controllers::add_user))
-        .route("/get_user", get(controllers::get_user))
+        .route("/get_user_by_email", get(controllers::get_user_by_email))
         .route("/update_user", patch(controllers::update_user))
         .route("/delete_user", delete(controllers::delete_user))
         .with_state(mongodb_client)
