@@ -1,10 +1,9 @@
 use super::super::db_config::{DB_NAME, TRANSACTIONS_COLLECTION_NAME};
 use super::model::{NewTransactionRequest, ReturnTransaction, Transaction, TransactionDateQuery};
 use axum::{
-    self,
     extract::{self, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{self, IntoResponse},
     Json,
 };
 use futures::stream::TryStreamExt; // For cursor.try_next method
@@ -58,7 +57,7 @@ pub async fn add_transaction(
 
 pub async fn get_transactions(
     extract::State(state): State<Client>,
-) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
+) -> response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     let collection = state
         .database(DB_NAME)
         .collection::<Document>(TRANSACTIONS_COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
@@ -97,7 +96,7 @@ pub async fn get_transactions(
 pub async fn get_transactions_by_date_range(
     extract::State(state): State<Client>,
     extract::Json(json_payload): extract::Json<TransactionDateQuery>,
-) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
+) -> response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     // The function searches by time to the hour as the dates are stored in UTC time
     // but the user would be searching by their local time
     let bson_start_date = bson::DateTime::from_chrono(json_payload.start_date);
