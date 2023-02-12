@@ -5,6 +5,9 @@ use axum::{
     Router,
 };
 
+// TODO: Add middleware for accepting requests from anywhere (See users/routes.rs for more info)
+// So that I can eventually call the API from an iOS shortcut
+
 pub async fn transaction_routes() -> Router {
     let mongodb_client = get_mongodb_client().await;
 
