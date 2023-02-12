@@ -1,7 +1,7 @@
 use super::controllers;
 use crate::db_config::get_mongodb_client;
 use axum::{
-    http::{header::CONTENT_TYPE, HeaderValue},
+    http::{header::CONTENT_TYPE, HeaderValue, Method},
     routing::{delete, get, patch, post},
     Router,
 };
@@ -13,6 +13,7 @@ pub async fn user_routes() -> Router {
     // TODO: Use environment variables for the allow_origin URL, so that it can be changed in production
     let cors_layer = CorsLayer::new()
         .allow_origin("http://localhost:5173".parse::<HeaderValue>().unwrap())
+        .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
         .allow_headers([CONTENT_TYPE]);
 
     Router::new()
