@@ -37,3 +37,11 @@ pub struct NewUserRequest {
     pub email: String,
     pub firebase_id: String,
 }
+
+/// UserCategories model
+/// Represents the data structure of data required to update a user's categories.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UserCategories {
+    pub email: String,
+    pub categories: Vec<String>,
+}

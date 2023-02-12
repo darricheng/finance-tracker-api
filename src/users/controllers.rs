@@ -1,12 +1,13 @@
 use super::super::db_config::{DB_NAME, USERS_COLLECTION_NAME};
-use super::model::{NewUserRequest, User};
+use super::model::{NewUserRequest, User, UserCategories};
 use axum::{
     self,
     extract::{self, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{self, IntoResponse},
     Json,
 };
+use mongodb::Collection;
 use mongodb::{
     self,
     bson::{self, doc, Document},
@@ -51,7 +52,7 @@ pub struct EmailQuery {
 pub async fn get_user_by_email(
     extract::State(state): State<Client>,
     extract::Query(email_query): extract::Query<EmailQuery>,
-) -> axum::response::Result<Json<User>, StatusCode> {
+) -> response::Result<Json<User>, StatusCode> {
     let collection = state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
     let result = collection
         .find_one(doc! {"email": email_query.email}, None)
@@ -81,8 +82,24 @@ pub async fn get_user_by_email(
     Ok(Json(user))
 }
 
-pub async fn update_user() -> impl IntoResponse {
-    StatusCode::NOT_IMPLEMENTED
+pub async fn update_user_categories(
+    extract::State(state): State<Client>,
+    extract::Json(user_categories): extract::Json<UserCategories>,
+) -> impl IntoResponse {
+    let collection: Collection<Document> =
+        state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
+    let result = collection
+        .update_one(
+            doc! {"email": user_categories.email},
+            doc! {"$set": {"categories": user_categories.categories}},
+            None,
+        )
+        .await;
+
+    match result {
+        Ok(_) => StatusCode::OK,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
 }
 
 pub async fn delete_user() -> impl IntoResponse {
