@@ -23,7 +23,7 @@ pub async fn add_user(
         json_payload.email,
         json_payload.firebase_id,
         Vec::new(),
-        String::new(),
+        // String::new(),
     );
     // Serialize the struct to a bson document
     let bson_document = match bson::to_document(&new_user) {

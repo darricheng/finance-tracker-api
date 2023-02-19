@@ -8,7 +8,9 @@ pub struct User {
     pub email: String,
     pub firebase_id: String,
     pub categories: Vec<String>,
-    pub api_key: String,
+    // Comment out api keys for now till I figure out how to better handle them
+    // TODO: Figure out how to handle api keys
+    // pub api_key: String,
 }
 
 impl User {
@@ -16,13 +18,13 @@ impl User {
         email: String,
         firebase_id: String,
         categories: Vec<String>,
-        api_key: String,
+        // api_key: String,
     ) -> Self {
         User {
             email,
             firebase_id,
             categories,
-            api_key,
+            // api_key,
         }
     }
 }
