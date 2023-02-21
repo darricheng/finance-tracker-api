@@ -17,10 +17,10 @@ pub async fn user_routes() -> Router {
         .allow_headers([CONTENT_TYPE]);
 
     Router::new()
-        .route("/add_user", post(controllers::add_user))
-        .route("/get_user_by_email", get(controllers::get_user_by_email))
+        .route("/add", post(controllers::add_user))
+        .route("/get_by_email", get(controllers::get_user_by_email))
         .route(
-            "/update_user_categories",
+            "/update_categories",
             patch(controllers::update_user_categories),
         )
         .route("/delete_user", delete(controllers::delete_user))
