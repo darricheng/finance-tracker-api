@@ -75,10 +75,7 @@ pub async fn get_user_by_email(
     };
 
     let user: User = match bson::from_document(bson_user) {
-        Ok(user) => {
-            println!("{user:?}");
-            user
-        }
+        Ok(user) => user,
         Err(err) => {
             println!("Error converting bson document to user: {err:?}");
             return Err(StatusCode::INTERNAL_SERVER_ERROR);
