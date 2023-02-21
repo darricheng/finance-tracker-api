@@ -1,3 +1,4 @@
+use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 /// Base User model
@@ -5,6 +6,7 @@ use serde::{Deserialize, Serialize};
 /// All fields are required. The derived structs are used for checking the validity of the data from users.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {
+    pub _id: ObjectId,
     pub email: String,
     pub firebase_id: String,
     pub categories: Vec<String>,
@@ -21,6 +23,7 @@ impl User {
         // api_key: String,
     ) -> Self {
         User {
+            _id: ObjectId::new(),
             email,
             firebase_id,
             categories,
