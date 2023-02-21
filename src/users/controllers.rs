@@ -18,7 +18,7 @@ use serde::Deserialize;
 pub async fn add_user(
     extract::State(state): State<Client>,
     extract::Json(json_payload): extract::Json<NewUserRequest>,
-) -> impl IntoResponse {
+) -> response::Result<Json<bson::oid::ObjectId>, StatusCode> {
     let new_user = User::new(
         json_payload.email,
         json_payload.firebase_id,
@@ -30,7 +30,7 @@ pub async fn add_user(
         Ok(document) => document,
         Err(err) => {
             println!("Error converting user to bson document: {err:?}");
-            return StatusCode::INTERNAL_SERVER_ERROR;
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
         }
     };
 
@@ -38,8 +38,11 @@ pub async fn add_user(
     let collection = state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
     let result = collection.insert_one(bson_document, None).await;
     match result {
-        Ok(_) => StatusCode::CREATED,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        Ok(res) => match bson::from_bson(res.inserted_id) {
+            Ok(id) => Ok(Json(id)),
+            Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        },
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
 
