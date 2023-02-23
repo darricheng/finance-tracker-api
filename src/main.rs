@@ -8,7 +8,10 @@ use dotenvy::dotenv;
 #[tokio::main]
 async fn main() {
     // Build necessary environment variables
-    dotenv().expect("Failed to load environment variables");
+    match dotenv() {
+        Ok(_) => println!("Successfully loaded environment variables"),
+        Err(_) => println!("Failed to load environment variables"),
+    };
 
     // Build individual api routes
     let api_routes = Router::new()

@@ -45,9 +45,20 @@ pub async fn add_transaction(
     };
 
     // Get the environment variables
-    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
-    let transactions_collection_name =
-        env::var("TRANSACTIONS_COLLECTION_NAME").expect("TRANSACTIONS_COLLECTION_NAME must be set");
+    let db_name = match env::var("DB_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("DB_NAME must be set");
+            String::new()
+        }
+    };
+    let transactions_collection_name = match env::var("TRANSACTIONS_COLLECTION_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("TRANSACTIONS_COLLECTION_NAME must be set");
+            String::new()
+        }
+    };
 
     // Insert the bson document into the database
     let collection = state
@@ -64,9 +75,20 @@ pub async fn get_transactions(
     extract::State(state): State<Client>,
 ) -> response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     // Get the environment variables
-    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
-    let transactions_collection_name =
-        env::var("TRANSACTIONS_COLLECTION_NAME").expect("TRANSACTIONS_COLLECTION_NAME must be set");
+    let db_name = match env::var("DB_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("DB_NAME must be set");
+            String::new()
+        }
+    };
+    let transactions_collection_name = match env::var("TRANSACTIONS_COLLECTION_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("TRANSACTIONS_COLLECTION_NAME must be set");
+            String::new()
+        }
+    };
 
     let collection = state
         .database(&db_name)
@@ -113,9 +135,20 @@ pub async fn get_transactions_by_date_range(
     let bson_end_date = bson::DateTime::from_chrono(json_payload.end_date);
 
     // Get the environment variables
-    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
-    let transactions_collection_name =
-        env::var("TRANSACTIONS_COLLECTION_NAME").expect("TRANSACTIONS_COLLECTION_NAME must be set");
+    let db_name = match env::var("DB_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("DB_NAME must be set");
+            String::new()
+        }
+    };
+    let transactions_collection_name = match env::var("TRANSACTIONS_COLLECTION_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("TRANSACTIONS_COLLECTION_NAME must be set");
+            String::new()
+        }
+    };
 
     let collection = state
         .database(&db_name)

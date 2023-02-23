@@ -35,10 +35,20 @@ pub async fn add_user(
     };
 
     // Get the environment variables
-    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
-    let users_collection_name =
-        env::var("USERS_COLLECTION_NAME").expect("USERS_COLLECTION_NAME must be set");
-
+    let db_name = match env::var("DB_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("DB_NAME must be set");
+            String::new()
+        }
+    };
+    let users_collection_name = match env::var("USERS_COLLECTION_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("USERS_COLLECTION_NAME must be set");
+            String::new()
+        }
+    };
     // Insert the bson document into the database
     let collection = state.database(&db_name).collection(&users_collection_name);
     let result = collection.insert_one(bson_document, None).await;
@@ -62,9 +72,20 @@ pub async fn get_user_by_email(
     extract::Query(email_query): extract::Query<EmailQuery>,
 ) -> response::Result<Json<User>, StatusCode> {
     // Get the environment variables
-    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
-    let users_collection_name =
-        env::var("USERS_COLLECTION_NAME").expect("USERS_COLLECTION_NAME must be set");
+    let db_name = match env::var("DB_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("DB_NAME must be set");
+            String::new()
+        }
+    };
+    let users_collection_name = match env::var("USERS_COLLECTION_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("USERS_COLLECTION_NAME must be set");
+            String::new()
+        }
+    };
 
     let collection = state.database(&db_name).collection(&users_collection_name);
     let result = collection
@@ -100,9 +121,20 @@ pub async fn update_user_categories(
     extract::Json(user_categories): extract::Json<UserCategories>,
 ) -> impl IntoResponse {
     // Get the environment variables
-    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
-    let users_collection_name =
-        env::var("USERS_COLLECTION_NAME").expect("USERS_COLLECTION_NAME must be set");
+    let db_name = match env::var("DB_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("DB_NAME must be set");
+            String::new()
+        }
+    };
+    let users_collection_name = match env::var("USERS_COLLECTION_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            println!("USERS_COLLECTION_NAME must be set");
+            String::new()
+        }
+    };
 
     let collection: Collection<Document> =
         state.database(&db_name).collection(&users_collection_name);
