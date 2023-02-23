@@ -12,7 +12,13 @@ pub async fn user_routes() -> Router {
     let mongodb_client = get_mongodb_client().await;
 
     // Get web app url from environment variables
-    let web_app_url = env::var("WEB_APP_URL").expect("WEB_APP_URL must be set");
+    let web_app_url = match env::var("WEB_APP_URL") {
+        Ok(url) => url,
+        Err(_) => {
+            println!("WEB_APP_URL must be set");
+            String::new()
+        }
+    };
 
     let cors_layer = CorsLayer::new()
         .allow_origin(web_app_url.parse::<HeaderValue>().unwrap())
