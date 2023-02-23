@@ -1,10 +1,9 @@
 use super::super::db_config::{DB_NAME, TRANSACTIONS_COLLECTION_NAME};
 use super::model::{NewTransactionRequest, ReturnTransaction, Transaction, TransactionDateQuery};
 use axum::{
-    self,
     extract::{self, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{self, IntoResponse},
     Json,
 };
 use futures::stream::TryStreamExt; // For cursor.try_next method
@@ -23,7 +22,7 @@ pub async fn add_transaction(
     // We use UTC time for ease of use
     // When we convert the DateTime object to a bson DateTime object, it will be converted to UTC time anyway
     let date = chrono::Utc::now();
-    println!("date: {:?}", date);
+    println!("date: {date:?}");
     // Convert the DateTime object to a bson DateTime object
     let date = bson::DateTime::from_chrono(date);
     // Create an instance of a new struct that includes the json data and the date
@@ -34,13 +33,13 @@ pub async fn add_transaction(
         json_payload.details,
         json_payload.user_id,
     );
-    println!("transaction: {:?}", transaction);
+    println!("transaction: {transaction:?}");
 
     // Serialize the new struct to a bson document
     let bson_document = match bson::to_document(&transaction) {
         Ok(document) => document,
         Err(err) => {
-            println!("Error converting transaction to bson document: {:?}", err);
+            println!("Error converting transaction to bson document: {err:?}");
             return StatusCode::INTERNAL_SERVER_ERROR;
         }
     };
@@ -58,7 +57,7 @@ pub async fn add_transaction(
 
 pub async fn get_transactions(
     extract::State(state): State<Client>,
-) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
+) -> response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     let collection = state
         .database(DB_NAME)
         .collection::<Document>(TRANSACTIONS_COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
@@ -66,7 +65,7 @@ pub async fn get_transactions(
     let mut cursor = match collection.find(None, None).await {
         Ok(cursor) => cursor,
         Err(err) => {
-            println!("Error: {}", err);
+            println!("Error: {err}");
             return Err(StatusCode::INTERNAL_SERVER_ERROR);
         }
     };
@@ -78,7 +77,7 @@ pub async fn get_transactions(
         match bson::from_bson(bson::Bson::Document(transaction)) {
             Ok(val) => result_vec.push(val),
             Err(err) => {
-                println!("Error: {}", err);
+                println!("Error: {err}");
             }
         }
     }
@@ -97,7 +96,7 @@ pub async fn get_transactions(
 pub async fn get_transactions_by_date_range(
     extract::State(state): State<Client>,
     extract::Json(json_payload): extract::Json<TransactionDateQuery>,
-) -> axum::response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
+) -> response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     // The function searches by time to the hour as the dates are stored in UTC time
     // but the user would be searching by their local time
     let bson_start_date = bson::DateTime::from_chrono(json_payload.start_date);
@@ -117,7 +116,7 @@ pub async fn get_transactions_by_date_range(
     let mut cursor = match collection.find(filter, None).await {
         Ok(cursor) => cursor,
         Err(err) => {
-            println!("Error: {}", err);
+            println!("Error: {err}");
             return Err(StatusCode::INTERNAL_SERVER_ERROR);
         }
     };
@@ -129,7 +128,7 @@ pub async fn get_transactions_by_date_range(
         match bson::from_bson::<Transaction>(bson::Bson::Document(transaction)) {
             Ok(val) => result_vec.push(val),
             Err(err) => {
-                println!("Error: {}", err);
+                println!("Error: {err}");
             }
         }
     }
