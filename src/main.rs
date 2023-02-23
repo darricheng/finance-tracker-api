@@ -3,11 +3,12 @@ mod transactions;
 mod users;
 
 use axum::Router;
+use dotenvy::dotenv;
 
 #[tokio::main]
 async fn main() {
-    // TODO: Build necessary environment variables
-    // See: https://www.thorsten-hans.com/working-with-environment-variables-in-rust/
+    // Build necessary environment variables
+    dotenv().expect("Failed to load environment variables");
 
     // Build individual api routes
     let api_routes = Router::new()

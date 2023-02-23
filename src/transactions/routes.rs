@@ -5,6 +5,7 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
+use std::env;
 use tower_http::cors::CorsLayer;
 
 // TODO: Add middleware for accepting requests from anywhere (See users/routes.rs for more info)
@@ -13,9 +14,11 @@ use tower_http::cors::CorsLayer;
 pub async fn transaction_routes() -> Router {
     let mongodb_client = get_mongodb_client().await;
 
-    // TODO: Use environment variables for the allow_origin URL, so that it can be changed in production
+    // Get web app url from environment variables
+    let web_app_url = env::var("WEB_APP_URL").expect("WEB_APP_URL must be set");
+
     let cors_layer = CorsLayer::new()
-        .allow_origin("http://localhost:5173".parse::<HeaderValue>().unwrap())
+        .allow_origin(web_app_url.parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
         .allow_headers([CONTENT_TYPE]);
 

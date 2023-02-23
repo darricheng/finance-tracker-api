@@ -1,4 +1,3 @@
-use super::super::db_config::{DB_NAME, TRANSACTIONS_COLLECTION_NAME};
 use super::model::{NewTransactionRequest, ReturnTransaction, Transaction, TransactionDateQuery};
 use axum::{
     extract::{self, State},
@@ -12,6 +11,7 @@ use mongodb::{
     bson::{self, doc, Document},
     Client,
 };
+use std::env;
 
 pub async fn add_transaction(
     extract::State(state): State<Client>,
@@ -44,10 +44,15 @@ pub async fn add_transaction(
         }
     };
 
+    // Get the environment variables
+    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
+    let transactions_collection_name =
+        env::var("TRANSACTIONS_COLLECTION_NAME").expect("TRANSACTIONS_COLLECTION_NAME must be set");
+
     // Insert the bson document into the database
     let collection = state
-        .database(DB_NAME)
-        .collection(TRANSACTIONS_COLLECTION_NAME);
+        .database(&db_name)
+        .collection(&transactions_collection_name);
     let result = collection.insert_one(bson_document, None).await;
     match result {
         Ok(_) => StatusCode::CREATED,
@@ -58,9 +63,14 @@ pub async fn add_transaction(
 pub async fn get_transactions(
     extract::State(state): State<Client>,
 ) -> response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
+    // Get the environment variables
+    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
+    let transactions_collection_name =
+        env::var("TRANSACTIONS_COLLECTION_NAME").expect("TRANSACTIONS_COLLECTION_NAME must be set");
+
     let collection = state
-        .database(DB_NAME)
-        .collection::<Document>(TRANSACTIONS_COLLECTION_NAME); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
+        .database(&db_name)
+        .collection::<Document>(&transactions_collection_name); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
 
     let mut cursor = match collection.find(None, None).await {
         Ok(cursor) => cursor,
@@ -102,9 +112,14 @@ pub async fn get_transactions_by_date_range(
     let bson_start_date = bson::DateTime::from_chrono(json_payload.start_date);
     let bson_end_date = bson::DateTime::from_chrono(json_payload.end_date);
 
+    // Get the environment variables
+    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
+    let transactions_collection_name =
+        env::var("TRANSACTIONS_COLLECTION_NAME").expect("TRANSACTIONS_COLLECTION_NAME must be set");
+
     let collection = state
-        .database(DB_NAME)
-        .collection::<Document>(TRANSACTIONS_COLLECTION_NAME);
+        .database(&db_name)
+        .collection::<Document>(&transactions_collection_name);
 
     let filter = doc! {
         "date": {
