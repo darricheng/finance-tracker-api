@@ -1,4 +1,3 @@
-use super::super::db_config::{DB_NAME, USERS_COLLECTION_NAME};
 use super::model::{NewUserRequest, User, UserCategories};
 use axum::{
     self,
@@ -14,6 +13,7 @@ use mongodb::{
     Client,
 };
 use serde::Deserialize;
+use std::env;
 
 pub async fn add_user(
     extract::State(state): State<Client>,
@@ -34,8 +34,13 @@ pub async fn add_user(
         }
     };
 
+    // Get the environment variables
+    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
+    let users_collection_name =
+        env::var("USERS_COLLECTION_NAME").expect("USERS_COLLECTION_NAME must be set");
+
     // Insert the bson document into the database
-    let collection = state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
+    let collection = state.database(&db_name).collection(&users_collection_name);
     let result = collection.insert_one(bson_document, None).await;
     match result {
         Ok(res) => match bson::from_bson(res.inserted_id) {
@@ -56,7 +61,12 @@ pub async fn get_user_by_email(
     extract::State(state): State<Client>,
     extract::Query(email_query): extract::Query<EmailQuery>,
 ) -> response::Result<Json<User>, StatusCode> {
-    let collection = state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
+    // Get the environment variables
+    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
+    let users_collection_name =
+        env::var("USERS_COLLECTION_NAME").expect("USERS_COLLECTION_NAME must be set");
+
+    let collection = state.database(&db_name).collection(&users_collection_name);
     let result = collection
         .find_one(doc! {"email": email_query.email}, None)
         .await;
@@ -89,8 +99,13 @@ pub async fn update_user_categories(
     extract::State(state): State<Client>,
     extract::Json(user_categories): extract::Json<UserCategories>,
 ) -> impl IntoResponse {
+    // Get the environment variables
+    let db_name = env::var("DB_NAME").expect("DB_NAME must be set");
+    let users_collection_name =
+        env::var("USERS_COLLECTION_NAME").expect("USERS_COLLECTION_NAME must be set");
+
     let collection: Collection<Document> =
-        state.database(DB_NAME).collection(USERS_COLLECTION_NAME);
+        state.database(&db_name).collection(&users_collection_name);
     let result = collection
         .update_one(
             doc! {"email": user_categories.email},

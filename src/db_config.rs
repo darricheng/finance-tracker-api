@@ -1,12 +1,8 @@
 use mongodb::Client;
-
-// TODO: Add support for environment variables (See main.rs for more info)
-
-pub const MONGO_URI: &str = "mongodb://localhost:27017/";
-pub const DB_NAME: &str = "financeTrackerApp";
-pub const TRANSACTIONS_COLLECTION_NAME: &str = "testTransactions";
-pub const USERS_COLLECTION_NAME: &str = "testUsers";
+use std::env;
 
 pub async fn get_mongodb_client() -> Client {
-    Client::with_uri_str(MONGO_URI).await.unwrap()
+    // Get mongo uri from environment variables
+    let mongo_uri = env::var("MONGO_URI").expect("MONGO_URI must be set");
+    Client::with_uri_str(mongo_uri).await.unwrap()
 }

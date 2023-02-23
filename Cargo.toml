@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 axum = "0.6.1"
 chrono = { version = "0.4.23", features = ["serde"] }
+dotenvy = "0.15.6"
 futures = "0.3.25"
 hyper = { version = "0.14.23", features = ["full"] }
 mongodb = { version = "2.3.1", features = ["bson-chrono-0_4"] }
