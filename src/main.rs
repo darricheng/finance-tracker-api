@@ -8,10 +8,11 @@ use dotenvy::dotenv;
 #[tokio::main]
 async fn main() {
     // Build necessary environment variables
-    match dotenv() {
-        Ok(_) => println!("Successfully loaded environment variables"),
-        Err(_) => println!("Failed to load environment variables"),
+    if dotenv().is_ok() {
+        println!("Successfully loaded environment variables")
     };
+    // Error case isn't handled because render.com's environment variables are only available at runtime
+    // and dotenvy will fail to load them immediately after the app is deployed
 
     // Build individual api routes
     let api_routes = Router::new()
