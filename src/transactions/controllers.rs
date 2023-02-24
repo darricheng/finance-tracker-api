@@ -8,9 +8,10 @@ use axum::{
 use futures::stream::TryStreamExt; // For cursor.try_next method
 use mongodb::{
     self,
-    bson::{self, doc, Document},
+    bson::{self, doc, oid::ObjectId, Document},
     Client,
 };
+use serde::Deserialize;
 use std::env;
 
 pub async fn add_transaction(
@@ -71,8 +72,14 @@ pub async fn add_transaction(
     }
 }
 
+#[derive(Deserialize)]
+pub struct UserID {
+    user_id: ObjectId,
+}
+
 pub async fn get_transactions(
     extract::State(state): State<Client>,
+    extract::Query(query): extract::Query<UserID>,
 ) -> response::Result<Json<Vec<ReturnTransaction>>, StatusCode> {
     // Get the environment variables
     let db_name = match env::var("DB_NAME") {
@@ -94,7 +101,7 @@ pub async fn get_transactions(
         .database(&db_name)
         .collection::<Document>(&transactions_collection_name); // Why add <Document> type annotation https://stackoverflow.com/a/71439769
 
-    let mut cursor = match collection.find(None, None).await {
+    let mut cursor = match collection.find(doc! {"user_id": query.user_id}, None).await {
         Ok(cursor) => cursor,
         Err(err) => {
             println!("Error: {err}");
