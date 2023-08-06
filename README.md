@@ -2,7 +2,7 @@
 
 A finance tracker app built to fulfill my requirements of what I need to track finances with my partner.
 
-**Note:** This is a work in progress. I'm still learning Rust and SvelteKit, so the code can definitely be improved. Furthermore, this will be a long-term project, so I'll be adding features as I go along.
+**Note:** This project is no longer being actively pursued as my motivations have changed. I realised that what I needed wasn't an app for couple finances; what I needed was something to help me with my own finances first.
 
 ## Motivation
 
